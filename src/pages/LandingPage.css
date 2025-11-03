@@ -42,7 +42,9 @@
 }
 
 .logo-icon {
-  font-size: 32px;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 
 .nav-buttons {
@@ -237,9 +239,24 @@
   border-color: #FF5A5F;
 }
 
-.category-icon {
-  font-size: 56px;
-  margin-bottom: 16px;
+.category-image-wrapper {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.category-card:hover .category-image {
+  transform: scale(1.05);
 }
 
 .category-name {
@@ -281,9 +298,24 @@
   box-shadow: 0 8px 24px rgba(255, 90, 95, 0.1);
 }
 
-.benefit-icon {
-  font-size: 48px;
+.benefit-image-wrapper {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
   margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.benefit-card:hover .benefit-image {
+  transform: scale(1.05);
 }
 
 .benefit-title {

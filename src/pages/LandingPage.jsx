@@ -5,41 +5,66 @@ function LandingPage() {
   const navigate = useNavigate()
 
   const categories = [
-    { id: 'apartment', name: 'Apartments', icon: '🏠', description: 'List your property and earn passive income' },
-    { id: 'meal', name: 'Home Meals', icon: '🍲', description: 'Share your culinary skills' },
-    { id: 'event', name: 'Events', icon: '🎫', description: 'Promote your events' },
-    { id: 'car', name: 'Luxury Cars', icon: '🚗', description: 'Rent out your premium vehicles' },
-    { id: 'service', name: 'Services', icon: '🔧', description: 'Offer your professional services' },
+    { 
+      id: 'apartment', 
+      name: 'Apartments', 
+      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80', 
+      description: 'List your property and earn passive income' 
+    },
+    { 
+      id: 'meal', 
+      name: 'Home Meals', 
+      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80', 
+      description: 'Share your culinary skills' 
+    },
+    { 
+      id: 'event', 
+      name: 'Events', 
+      image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80', 
+      description: 'Promote your events' 
+    },
+    { 
+      id: 'car', 
+      name: 'Luxury Cars', 
+      image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=600&q=80', 
+      description: 'Rent out your premium vehicles' 
+    },
+    { 
+      id: 'service', 
+      name: 'Services', 
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&q=80', 
+      description: 'Offer your professional services' 
+    },
   ]
 
   const benefits = [
     {
-      icon: '👥',
+      image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&q=80',
       title: '50,000+ Monthly Users',
       description: 'Reach a massive audience of active users looking for your listings'
     },
     {
-      icon: '💰',
+      image: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&q=80',
       title: 'Earn More Money',
       description: 'Set your own prices and maximize your earning potential'
     },
     {
-      icon: '⚡',
+      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80',
       title: 'Fast & Easy Listing',
       description: 'Create listings in minutes with our simple dashboard'
     },
     {
-      icon: '📱',
+      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
       title: 'Mobile & Web Access',
       description: 'Manage your listings anywhere, anytime from any device'
     },
     {
-      icon: '🔒',
+      image: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&q=80',
       title: 'Secure Payments',
       description: 'Get paid safely and on time through our secure system'
     },
     {
-      icon: '📊',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
       title: 'Analytics Dashboard',
       description: 'Track your performance and optimize your listings'
     },
@@ -58,7 +83,7 @@ function LandingPage() {
       <header className="hero-section">
         <nav className="hero-nav">
           <div className="logo">
-            <span className="logo-icon">🏠</span>
+            <img src="/logo.png" alt="Softlife" className="logo-icon" />
             <span className="logo-text">Softlife</span>
           </div>
           <div className="nav-buttons">
@@ -110,7 +135,9 @@ function LandingPage() {
           <div className="categories-grid">
             {categories.map((category) => (
               <div key={category.id} className="category-card">
-                <div className="category-icon">{category.icon}</div>
+                <div className="category-image-wrapper">
+                  <img src={category.image} alt={category.name} className="category-image" />
+                </div>
                 <h3 className="category-name">{category.name}</h3>
                 <p className="category-description">{category.description}</p>
               </div>
@@ -128,7 +155,9 @@ function LandingPage() {
           <div className="benefits-grid">
             {benefits.map((benefit, index) => (
               <div key={index} className="benefit-card">
-                <div className="benefit-icon">{benefit.icon}</div>
+                <div className="benefit-image-wrapper">
+                  <img src={benefit.image} alt={benefit.title} className="benefit-image" />
+                </div>
                 <h3 className="benefit-title">{benefit.title}</h3>
                 <p className="benefit-description">{benefit.description}</p>
               </div>
@@ -152,7 +181,7 @@ function LandingPage() {
       <footer className="landing-footer">
         <div className="footer-content">
           <div className="footer-logo">
-            <span className="logo-icon">🏠</span>
+            <img src="/logo.png" alt="Softlife" className="logo-icon" />
             <span className="logo-text">Softlife</span>
           </div>
           <p className="footer-text">© 2025 Softlife. All rights reserved.</p>
