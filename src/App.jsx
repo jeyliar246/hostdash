@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './config/supabase'
+import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import ListProperty from './pages/ListProperty'
@@ -36,6 +37,10 @@ function App() {
     <Router>
       <Routes>
         <Route 
+          path="/" 
+          element={<LandingPage />} 
+        />
+        <Route 
           path="/auth" 
           element={user ? <Navigate to="/dashboard" /> : <AuthPage />} 
         />
@@ -47,7 +52,6 @@ function App() {
           path="/list/:type" 
           element={user ? <ListProperty user={user} /> : <Navigate to="/auth" />} 
         />
-        <Route path="/" element={<Navigate to={user ? "/dashboard" : "/auth"} />} />
       </Routes>
     </Router>
   )

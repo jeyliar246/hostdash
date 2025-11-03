@@ -7,8 +7,13 @@ function ListProperty({ user }) {
   const { type } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [images, setImages] = useState([])
+  const [video, setVideo] = useState(null)
+  const [imagePreviews, setImagePreviews] = useState([])
+  const [videoPreview, setVideoPreview] = useState(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -85,6 +90,118 @@ function ListProperty({ user }) {
     })
   }
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length + images.length > 10) {
+      setError('Maximum 10 images allowed')
+      return
+    }
+
+    files.forEach((file) => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setImagePreviews((prev) => [...prev, reader.result])
+          setImages((prev) => [...prev, file])
+        }
+        reader.readAsDataURL(file)
+      } else {
+        setError('Please select image files only')
+      }
+    })
+  }
+
+  const removeImage = (index) => {
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index))
+    setImages((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0]
+    if (file && file.type.startsWith('video/')) {
+      if (file.size > 100 * 1024 * 1024) {
+        setError('Video file size must be less than 100MB')
+        return
+      }
+      setVideo(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setVideoPreview(URL.createObjectURL(file))
+      }
+      reader.readAsDataURL(file)
+    } else {
+      setError('Please select a video file')
+    }
+  }
+
+  const removeVideo = () => {
+    setVideo(null)
+    setVideoPreview(null)
+  }
+
+  const uploadFiles = async (listingId, tableName) => {
+    const uploadedUrls = []
+
+    // Upload images
+    if (images.length > 0) {
+      setUploading(true)
+      try {
+        const imagePromises = images.map(async (image, index) => {
+          const fileExt = image.name.split('.').pop()
+          const fileName = `${listingId}_${Date.now()}_${index}.${fileExt}`
+          const filePath = `${tableName}/${listingId}/${fileName}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('media')
+            .upload(filePath, image)
+
+          if (uploadError) throw uploadError
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('media')
+            .getPublicUrl(filePath)
+
+          return publicUrl
+        })
+
+        const urls = await Promise.all(imagePromises)
+        uploadedUrls.push(...urls)
+      } catch (err) {
+        console.error('Image upload error:', err)
+        throw new Error('Failed to upload images')
+      }
+    }
+
+    // Upload video
+    if (video) {
+      try {
+        const fileExt = video.name.split('.').pop()
+        const fileName = `${listingId}_${Date.now()}.${fileExt}`
+        const filePath = `${tableName}/${listingId}/${fileName}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('media')
+          .upload(filePath, video)
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('media')
+          .getPublicUrl(filePath)
+
+        return { images: uploadedUrls, video: publicUrl }
+      } catch (err) {
+        console.error('Video upload error:', err)
+        throw new Error('Failed to upload video')
+      } finally {
+        setUploading(false)
+      }
+    }
+
+    setUploading(false)
+    return { images: uploadedUrls, video: null }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -125,6 +242,29 @@ function ListProperty({ user }) {
         .single()
 
       if (insertError) throw insertError
+
+      // Upload images and video
+      if (images.length > 0 || video) {
+        const { images: imageUrls, video: videoUrl } = await uploadFiles(data.id, config.table)
+        
+        // Update listing with image and video URLs
+        const updateData = {}
+        if (imageUrls.length > 0) {
+          updateData.images = JSON.stringify(imageUrls)
+        }
+        if (videoUrl) {
+          updateData.video = videoUrl
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          const { error: updateError } = await supabase
+            .from(config.table)
+            .update(updateData)
+            .eq('id', data.id)
+
+          if (updateError) console.error('Update error:', updateError)
+        }
+      }
 
       setSuccess(`${config.title.replace('List ', '')} listed successfully!`)
       setTimeout(() => {
@@ -298,7 +438,82 @@ function ListProperty({ user }) {
 
       <main className="list-main">
         <form onSubmit={handleSubmit} className="list-form">
-          {config.fields.map((field) => renderField(field))}
+          {/* Image Upload Section */}
+          <div className="form-section">
+            <label className="section-label">
+              <span>📸 Upload Images</span>
+              <span className="section-hint">Add up to 10 images (Optional)</span>
+            </label>
+            <div className="upload-area">
+              <input
+                type="file"
+                id="image-upload"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="file-input"
+                disabled={uploading}
+              />
+              <label htmlFor="image-upload" className="upload-button">
+                <span>+ Choose Images</span>
+              </label>
+            </div>
+            {imagePreviews.length > 0 && (
+              <div className="preview-grid">
+                {imagePreviews.map((preview, index) => (
+                  <div key={index} className="preview-item">
+                    <img src={preview} alt={`Preview ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="remove-button"
+                      onClick={() => removeImage(index)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Video Upload Section */}
+          <div className="form-section">
+            <label className="section-label">
+              <span>🎥 Upload Video</span>
+              <span className="section-hint">Add a video (Optional, Max 100MB)</span>
+            </label>
+            <div className="upload-area">
+              <input
+                type="file"
+                id="video-upload"
+                accept="video/*"
+                onChange={handleVideoChange}
+                className="file-input"
+                disabled={uploading}
+              />
+              <label htmlFor="video-upload" className="upload-button">
+                <span>+ Choose Video</span>
+              </label>
+            </div>
+            {videoPreview && (
+              <div className="video-preview">
+                <video src={videoPreview} controls />
+                <button
+                  type="button"
+                  className="remove-button"
+                  onClick={removeVideo}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Form Fields */}
+          <div className="form-section">
+            <h3 className="section-title">Listing Details</h3>
+            {config.fields.map((field) => renderField(field))}
+          </div>
 
           {error && <div className="error-message">{error}</div>}
           {success && <div className="success-message">{success}</div>}
@@ -307,8 +522,8 @@ function ListProperty({ user }) {
             <button type="button" className="cancel-button" onClick={() => navigate('/dashboard')}>
               Cancel
             </button>
-            <button type="submit" className="submit-button" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Listing'}
+            <button type="submit" className="submit-button" disabled={loading || uploading}>
+              {uploading ? 'Uploading...' : loading ? 'Creating...' : 'Create Listing'}
             </button>
           </div>
         </form>
