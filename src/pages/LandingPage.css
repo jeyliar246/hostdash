@@ -393,7 +393,26 @@
   gap: 10px;
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-link {
+  color: #999;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: white;
 }
 
 .footer-text {

@@ -5,6 +5,9 @@ import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import ListProperty from './pages/ListProperty'
+import SupportPage from './pages/SupportPage'
+import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -51,6 +54,18 @@ function App() {
         <Route 
           path="/list/:type" 
           element={user ? <ListProperty user={user} /> : <Navigate to="/auth" />} 
+        />
+        <Route 
+          path="/support" 
+          element={<SupportPage />} 
+        />
+        <Route 
+          path="/terms" 
+          element={<TermsPage />} 
+        />
+        <Route 
+          path="/privacy" 
+          element={<PrivacyPage />} 
         />
       </Routes>
     </Router>

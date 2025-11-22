@@ -184,6 +184,11 @@ function LandingPage() {
             <img src="/logo.png" alt="Softlife" className="logo-icon" />
             <span className="logo-text">Softlife</span>
           </div>
+          <div className="footer-links">
+            <a href="/support" className="footer-link" onClick={(e) => { e.preventDefault(); navigate('/support'); }}>Support</a>
+            <a href="/terms" className="footer-link" onClick={(e) => { e.preventDefault(); navigate('/terms'); }}>Terms & Conditions</a>
+            <a href="/privacy" className="footer-link" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>Privacy Policy</a>
+          </div>
           <p className="footer-text">© 2025 Softlife. All rights reserved.</p>
         </div>
       </footer>

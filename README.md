@@ -51,3 +51,6 @@ Make sure your Supabase database has the following tables:
 - Supabase (Authentication & Database)
 - React Router
 
+
+
+

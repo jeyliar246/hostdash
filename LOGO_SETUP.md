@@ -34,3 +34,6 @@ The website is configured to use `/logo.png` from the `public` folder.
 - **Background:** Transparent preferred
 - **File size:** Under 500KB for faster loading
 
+
+
+
